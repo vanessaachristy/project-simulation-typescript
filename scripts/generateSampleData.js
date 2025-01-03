@@ -4,7 +4,13 @@ const path = require('path');
 const phoneNumbers = [
   '80000000', '81111111', '82222222', '83333333', 
   '84444444', '85555555', '86666666', '87777777', 
-  '88888888', '89999999'
+  '88888888', '89999999',
+];
+
+const subscribedPlans = [
+  'plan_3', 'plan_2', 'plan_6', 'plan_1', 
+  'plan_2', 'plan_2', 'plan_3', 'plan_4', 
+  'plan_4', 'plan_5',
 ];
 
 const usageMin = 100;
@@ -18,13 +24,13 @@ function getRandomUsage() {
 }
 
 function generateSampleData() {
-  let data = 'phone_number,date,usage_in_mb\n';
+  let data = 'phone_number,plan_id,date,usage_in_mb\n';
   
-  phoneNumbers.forEach(phoneNumber => {
+  phoneNumbers.forEach((phoneNumber, idx) => {
     for (let i = 0; i < numDays; i++) {
       const date = todayUTC - (i * 24 * 60 * 60 * 1000);
       const usage = getRandomUsage();
-      data += `${phoneNumber},${date},${usage}\n`;
+      data += `${phoneNumber},${subscribedPlans[idx]},${date},${usage}\n`;
     }
   });
 

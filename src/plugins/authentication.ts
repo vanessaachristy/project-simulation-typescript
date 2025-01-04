@@ -10,7 +10,11 @@ declare module 'fastify' {
 }
 
 const authPlugin: FastifyPluginCallback = (server, opts, done) => {
-    server.register(fastifyJwt, { secret: auth.jwtSecret });
+    server.register(fastifyJwt,
+        {
+            secret: auth.jwtSecret,
+            sign: { expiresIn: '7d' }, // expires in 1 week
+        });
 
     server.decorate("authenticate", async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
         try {

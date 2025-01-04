@@ -12,9 +12,9 @@ export const userController = {
         if (user === 'test' && password === 'password') {
             const token = fastify.jwt.sign({ user }); // Generate JWT token with the payload
 
-            const res: ApiResponse<{}> = {
+            const res = {
                 success: true,
-                // data: [{ token }],  // Send the token back
+                token: token
             };
 
             reply.header('Authorization', `Bearer ${token}`);

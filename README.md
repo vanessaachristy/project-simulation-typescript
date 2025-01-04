@@ -13,14 +13,45 @@ The amount of free data will be reset at the start of every billing cycle.
 ### Prerequisites
 NodeJS 18 (or higher)
 
-### Test
+### Install packages
 ```shell
 yarn install
-yarn test
 ```
 
-### Run
+### Configure Environment Variables: 
+#### Create a .env file in the root directory and add the following:
+```shell
+DATABASE_URL="file:./dev.db"
+```
+
+#### Create a .env.test file in the root directory and add the following:
+```shell
+DATABASE_URL="file:./test.db"
+```
+
+### Migrate the database
+#### Migrate the Database: Run the following commands to set up the database schema and generate the Prisma client:
+```shell
+yarn prisma-migrate
+yarn prisma-generate
+```
+
+### Check Prisma SQLite dashboard to inspect the DB
+```shell
+npx prisma-studio
+```
+
+### Build & Run 
 ```shell
 yarn build
 yarn start
 ```
+
+### Test
+```shell
+yarn test
+```
+
+
+
+

@@ -14,5 +14,6 @@ server.listen({ port: 3000 }, (err, _address) => {
     server.log.error(err);
     process.exit(1);
   }
+  console.log(process.env.DATABASE_URL);
   console.log("Server is running at http://localhost:3000");
 });

@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model Subscriber {
+  id          Int          @id @default(autoincrement())
+  phoneNumber String       @unique
+  planId      String
+  plan        DataPlan     @relation(fields: [planId], references: [id])
+  usageData   UsageData[]
+
+  @@map("subscribers")
+}
+
+model UsageData {
+  id           Int          @id @default(autoincrement())
+  subscriberId Int
+  date         DateTime
+  usageInMb    Int
+  subscriber   Subscriber   @relation(fields: [subscriberId], references: [id])
+
+  @@unique([subscriberId, date])
+  @@map("usage_data")
+}
+
+model DataPlan {
+  id                  String        @id
+  provider            String
+  name                String
+  dataFreeInGb        Float
+  billingCycleInDays  Int
+  price               Float
+  excessChargePerMb   Float
+  subscribers         Subscriber[]
+
+  @@map("data_plan")
+}

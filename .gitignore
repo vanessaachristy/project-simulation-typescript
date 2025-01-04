@@ -1,2 +1,51 @@
+# Node.js modules directory
 node_modules
+
+# Build output directory
 dist
+
+# Environment variable files
+.env*
+
+# Authentication configuration file
+src/config/auth.ts
+
+# Prisma database files
+prisma/*.db
+
+# macOS Finder metadata file
+.DS_Store
+
+# Code coverage directory
+coverage
+
+# Log files
+*.log
+
+# JetBrains IDE project files
+.idea
+
+# Visual Studio Code project files
+.vscode
+
+# TypeScript build info files
+*.tsbuildinfo
+
+# npm debug log files
+npm-debug.log*
+
+# Yarn debug log files
+yarn-debug.log*
+yarn-error.log*
+
+# Lerna debug log files
+lerna-debug.log*
+
+# Data directory
+data
+
+# Clojure linter configuration directory
+.clj-kondo
+
+# Language Server Protocol configuration directory
+.lsp

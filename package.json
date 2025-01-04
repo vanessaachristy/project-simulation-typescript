@@ -4,21 +4,35 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "fastify": "^4.0.0"
+    "@fastify/jwt": "^9.0.2",
+    "@prisma/client": "^6.1.0",
+    "better-sqlite3": "^11.7.0",
+    "csv-parser": "^3.1.0",
+    "fastify": "^5.2.0",
+    "fastify-multipart": "^5.4.0",
+    "fastify-plugin": "^5.0.1"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "env-cmd -f .env tsc",
     "start": "node dist/server.js",
     "generate-test-data": "node scripts/generateSampleData.js",
-    "test": "jest"
+    "prisma-migrate": "npx prisma migrate dev --name init",
+    "prisma-generate": "npx prisma generate",
+    "test": "env-cmd -f .env.test jest"
+  },
+   "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
-    "pino-pretty": "^13.0.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.7.2",
-    "jest": "^29.0.0",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/fastify-multipart": "^0.7.2",
     "@types/jest": "^29.0.0",
-    "ts-jest": "^29.0.0"
+    "@types/node": "^22.10.2",
+    "env-cmd": "^10.1.0",
+    "jest": "^29.0.0",
+    "pino-pretty": "^13.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
   }
 }

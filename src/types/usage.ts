@@ -1,5 +1,11 @@
 export interface Usage {
+  id: string;
   subscriberId: string;
   date: Date;
-  usageInMB: number;
+  usageInMb: number;
+}
+
+export interface UsageDetails extends Usage {
+  phoneNumber: string;
+  planId: string;
 }

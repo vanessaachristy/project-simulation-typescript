@@ -1,78 +1,52 @@
 import { Prisma } from "@prisma/client";
-import { prisma } from "../plugins/prisma";
-import { DataPlan, InsertUsageDbResult, Usage, UsageDetails } from "../types";
+import { InsertUsageDbResult, Usage, UsageDetails } from "../types";
+import { usageRepository } from "../repositories/usage-repository";
 
-export async function getAllUsages(): Promise<Usage[]> {
-    const usages = await prisma.usageData.findMany();
-    return usages.map(usage => ({
-        ...usage,
-        id: usage.id.toString(),
-        subscriberId: usage.subscriberId.toString()
-    }));
-}
 
-export async function getAllUsagesBySubscriber(subscriberId: string): Promise<Usage[]> {
-    const usagesBySubscriber = await prisma.usageData.findMany({
-        where: {
-            subscriberId: Number(subscriberId)
-        }
-    });
+export const usageService = {
 
-    return usagesBySubscriber.map(usage => ({
-        ...usage,
-        id: usage.id.toString(),
-        subscriberId: usage.subscriberId.toString()
-    }));
-}
+    getAllUsages: async (): Promise<Usage[]> => {
+        const usages = await usageRepository.findAll();
+        return usages.map(usage => ({
+            ...usage,
+            id: usage.id.toString(),
+            subscriberId: usage.subscriberId.toString()
+        }));
+    },
 
-export async function getAllUsageByPhoneNumber(phoneNumber: string): Promise<UsageDetails[]> {
-    const usagesByPhoneNumber = await prisma.usageData.findMany({
-        where: {
-            subscriber: {
-                phoneNumber: phoneNumber
-            },
+    getAllUsagesBySubscriber: async (subscriberId: string): Promise<Usage[]> => {
+        const usagesBySubscriber = await usageRepository.findBySubscriberId(Number(subscriberId));
+        return usagesBySubscriber.map(usage => ({
+            ...usage,
+            id: usage.id.toString(),
+            subscriberId: usage.subscriberId.toString()
+        }));
+    },
 
-        },
-        include: {
-            subscriber: {
-                select: {
-                    id: true,
-                    phoneNumber: true,
-                    planId: true,
-                },
-            },
-        },
-    })
+    getAllUsageByPhoneNumber: async (phoneNumber: string): Promise<UsageDetails[]> => {
+        const usagesByPhoneNumber = await usageRepository.findByPhoneNumber(phoneNumber);
+        return usagesByPhoneNumber.map(usage => ({
+            id: usage.id.toString(),
+            subscriberId: usage.subscriberId.toString(),
+            date: usage.date,
+            usageInMb: usage.usageInMb,
+            phoneNumber: usage.subscriber.phoneNumber,
+            planId: usage.subscriber.planId,
+        }));
+    },
 
-    return usagesByPhoneNumber.map(usage => ({
-        id: usage.id.toString(),
-        subscriberId: usage.subscriberId.toString(),
-        date: usage.date,
-        usageInMb: usage.usageInMb,
-        phoneNumber: usage.subscriber.phoneNumber,
-        planId: usage.subscriber.planId,
-    }));
-}
-
-export async function insertUsageData(subscriberId: number, date: string, usageInMb: number): Promise<InsertUsageDbResult> {
-    try {
-        await prisma.usageData.create({
-            data: {
-                subscriberId: subscriberId,
-                date: date,
-                usageInMb: usageInMb
+    insertUsageData: async (subscriberId: number, date: string, usageInMb: number): Promise<InsertUsageDbResult> => {
+        try {
+            await usageRepository.insertUsageData(subscriberId, date, usageInMb);
+            return { success: true };
+        } catch (err: any) {
+            // Handle unique (subscribeId, date) constraint
+            if (err instanceof Prisma.PrismaClientKnownRequestError) {
+                if (err.code === 'P2002') {
+                    return { success: false, error: "There is a unique constraint violation. Existing subscriberId and date already exist." };
+                }
             }
-        });
-
-        return { success: true };
-    } catch (err: any) {
-        // Handle unique (subscribeId, date) constraint
-        if (err instanceof Prisma.PrismaClientKnownRequestError) {
-            if (err.code === 'P2002') {
-                return { success: false, error: "There is a unique constraint violation. Existing subscriberId and date already exist." };
-            }
+            return { success: false, error: err?.message || "Error occured during insertion" };
         }
-        return { success: false, error: err?.message || "Error occured during insertion" };
     }
-}
-
+};

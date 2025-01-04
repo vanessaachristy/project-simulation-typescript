@@ -9,50 +9,94 @@ import { subsriberService } from '../services/subscriber.service';
 
 export const importController = {
     importCSV: async (request: FastifyRequest, _reply: FastifyReply) => {
-        const filePath = path.join(__dirname, '../../data/usage.csv');
+
+        // Check if the request is multipart / file uploaded
+        if (!request.isMultipart()) {
+            const res: ApiResponse<{}> = {
+                success: false,
+                error: "No file uploaded"
+            };
+            return _reply.status(400).send(res);
+        }
+
+        const data = await request.file();
+
+        if (!data) {
+            const res: ApiResponse<{}> = {
+                success: false,
+                error: "No file uploaded"
+            };
+            return _reply.send(res)
+        };
+
+        const { file, filename } = data;
+
+        // Handle file stream (e.g., write locally with name YYYY-MM-DD_hh-hh-ss-filename)
+        const formattedDate = new Date().toISOString().replace(/:/g, '-').replace('T', '_').split('.')[0];
+
+        const filePath = path.join(__dirname, '../../data/', `${formattedDate}-${filename}`);
+
+        await new Promise((resolve, reject) => {
+            const stream = fs.createWriteStream(filePath);
+            file.pipe(stream);
+            stream.on('finish', resolve);
+            stream.on('error', reject);
+        });
+
 
         if (!fs.existsSync(filePath)) {
-            return _reply.status(400).send({ error: 'File not found' });
+            const res: ApiResponse<{}> = {
+                success: false,
+                error: "Error processing file"
+            };
+            return _reply.status(400).send(res);
         }
 
         const results: ImportResult[] = [];
         const errors: ErrorEntry[] = [];
         const csvData: UsageCSVRow[] = [];
 
-        // Asynchronously parse CSV data into an array
+        // Parse CSV data into an array
         await new Promise<void>((resolve, reject) => {
             const readStream = fs.createReadStream(filePath);
+            let headersValidated = false;
             readStream.pipe(csvParser())
                 .on('data', (row: UsageCSVRow) => {
+
+                    // Validate column header of the CSV file
+                    if (!headersValidated) {
+                        const requiredHeaders = ['phone_number', 'plan_id', 'date', 'usage_in_mb'];
+                        const headers = Object.keys(row);
+                        const missingHeaders = requiredHeaders.filter(header => !headers.includes(header));
+                        if (missingHeaders.length > 0) {
+                            const res: ApiResponse<{}> = {
+                                success: false,
+                                error: "Missing required columns"
+                            };
+                            return _reply.status(400).send(res);
+                        }
+                        headersValidated = true;
+                    }
+
                     csvData.push(row);
                 })
                 .on('end', resolve)
                 .on('error', reject);
         });
 
-        // Insert each row sequentially into the db
-        for (const row of csvData) {
+        const insertPromises = csvData.map(async (row) => {
             const { phone_number, plan_id, date, usage_in_mb } = row;
             const usageDate = new Date(Number(date));
             const stringDate = usageDate?.toISOString();
 
-            // Validate date
-            if (isNaN(usageDate.getTime())) {
-                errors.push({ phoneNumber: phone_number, planId: plan_id, date: stringDate, usageInMb: usage_in_mb, reason: 'Invalid date' });
-                continue;
-            }
-
-            // Validate usage data
-            if (isNaN(usage_in_mb) || usage_in_mb <= 0) {
+            // Validate date and usage
+            if (isNaN(usageDate.getTime()) || isNaN(usage_in_mb) || usage_in_mb <= 0) {
                 errors.push({ phoneNumber: phone_number, planId: plan_id, date: stringDate, usageInMb: usage_in_mb, reason: 'Invalid usage data' });
-                continue;
+                return;
             }
 
             try {
-                // Get subscriber ID or create one if not exists
                 const subscriberId = await subsriberService.getSubscriberId(phone_number, plan_id);
-
-                // Insert usage data
                 const result = await usageService.insertUsageData(subscriberId, stringDate, Number(usage_in_mb));
 
                 if (!result.success) {
@@ -63,7 +107,11 @@ export const importController = {
             } catch (error: any) {
                 errors.push({ phoneNumber: phone_number, planId: plan_id, date: stringDate, usageInMb: usage_in_mb, reason: error?.message || 'Unknown error' });
             }
-        }
+        });
+
+        // Execute all insertions concurrently
+        await Promise.all(insertPromises);
+
 
         const res: ApiResponse<ImportResponse> = {
             success: true,

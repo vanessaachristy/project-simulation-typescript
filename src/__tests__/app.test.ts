@@ -5,12 +5,14 @@
 // import path from "path";
 // import { CREATE_DATA_PLAN_TABLE, CREATE_SUBSCRIBERS_TABLE, CREATE_USAGE_DATA_TABLE } from "../db";
 
-import Fastify, { FastifyInstance } from "fastify";
+import { FastifyInstance } from "fastify";
 import { buildApp } from "../app";
 import { execSync } from "child_process";
 import { PrismaClient } from '@prisma/client';
 import { availableDataPlans } from "../config/seed";
-import { ApiResponse } from "../types";
+import path from "path";
+import fs from 'fs';
+import FormData from 'form-data';
 
 
 
@@ -166,15 +168,25 @@ describe('Test for data plan endpoints', () => {
 
 describe('Test for import daily data data CSV endpoints', () => {
 
+  const filePath = path.join(__dirname, '../../data/usage.csv');
+
   test("POST /import should import daily data usage from CSV", async () => {
+    // Read the file to simulate the upload
+    const form = new FormData();
+    form.append('file', fs.createReadStream(filePath));
+    form.append('key', 'value');
+
     const response = await app.inject({
       method: "POST",
       url: "/import",
       headers: {
-        Authorization: authorizationHeader
-      }
+        Authorization: authorizationHeader,
+        ...form.getHeaders(),
+      },
+      body: form
     });
 
+    // Assert response status and content
     expect(response.statusCode).toBe(200);
     const responseData = response.json();
     expect(responseData.success).toBe(true);
@@ -183,15 +195,23 @@ describe('Test for import daily data data CSV endpoints', () => {
   });
 
 
+
   test("POST /import should return an error message because of duplicated entries due to previous exact import", async () => {
+
+    const form = new FormData();
+    form.append('file', fs.createReadStream(filePath));
+    form.append('key', 'value');
 
     const response = await app.inject({
       method: "POST",
       url: "/import",
       headers: {
-        Authorization: authorizationHeader
-      }
+        Authorization: authorizationHeader,
+        ...form.getHeaders(),
+      },
+      body: form
     });
+
 
     expect(response.statusCode).toBe(200);
     const responseData = response.json();

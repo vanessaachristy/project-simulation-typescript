@@ -14,10 +14,10 @@ export const usageController = {
 
             let usages: Usage[] | UsageDetails[];
 
-            // Parse  range if provided
             const start = startDate ? new Date(startDate) : null;
             const end = endDate ? new Date(endDate) : null;
 
+            // Get usages by different query from usage service
             if (subscriberId) {
                 usages = await usageService.getAllUsagesBySubscriber(subscriberId);
             } else if (phoneNumber) {

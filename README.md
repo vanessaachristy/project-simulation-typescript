@@ -47,6 +47,11 @@ yarn build
 yarn start
 ```
 
+### Generate sample data for import
+```shell
+yarn generate-test-data
+```
+
 ### Test
 ```shell
 yarn test

@@ -8,7 +8,7 @@ export const subscriberRepository = {
     },
 
     findBySubscriberId: async (id: number) => {
-        return await prisma.usageData.findUnique({ where: { id } });
+        return await prisma.subscriber.findUnique({ where: { id } });
     },
 
     findByPhoneNumber: async (phoneNumber: string) => {

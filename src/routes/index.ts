@@ -6,6 +6,7 @@ import usageRoutes from './usage';
 import auth from '../plugins/authentication';
 import userRoutes from './user';
 import billingRoutes from './billing';
+import subscriberRoutes from './subscriber';
 
 
 export default function routes(fastify: FastifyInstance) {
@@ -21,5 +22,6 @@ export default function routes(fastify: FastifyInstance) {
   fastify.register(usageRoutes);
   fastify.register(userRoutes)
   fastify.register(billingRoutes);
+  fastify.register(subscriberRoutes);
 
 }

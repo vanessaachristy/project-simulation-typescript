@@ -1,5 +1,4 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { ApiResponse } from "../types";
 
 export const userController = {
 

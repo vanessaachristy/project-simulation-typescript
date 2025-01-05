@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ApiResponse, DataPlan, Usage, UsageDetails } from '../types';
+import { ApiResponse, Usage, UsageDetails } from '../types';
 import { usageService } from '../services/usage.service';
 
 export const usageController = {

@@ -1,6 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ApiResponse, DataPlan } from '../types';
-import { planService } from '../services/plan.service';
+import { ApiResponse } from '../types';
 import { Subscriber } from '@prisma/client';
 import { subscriberService } from '../services/subscriber.service';
 

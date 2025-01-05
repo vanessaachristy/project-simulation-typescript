@@ -1,21 +1,12 @@
-// import { buildApp } from "../app";
-// import { FastifyInstance } from "fastify";
-// import sqlite3 from "better-sqlite3";
-// import { availableDataPlans } from "../config/seed";
-// import path from "path";
-// import { CREATE_DATA_PLAN_TABLE, CREATE_SUBSCRIBERS_TABLE, CREATE_USAGE_DATA_TABLE } from "../db";
-
 import { FastifyInstance } from "fastify";
 import { buildApp } from "../app";
 import { execSync } from "child_process";
 import { DataPlan, PrismaClient, Subscriber } from '@prisma/client';
-import { availableDataPlans } from "../config/seed";
 import path from "path";
 import fs from 'fs';
 import FormData from 'form-data';
 import { Usage } from "../types";
-import { BillingReport, CycleDetails } from "../types/billing";
-
+import { CycleDetails } from "../types/billing";
 
 
 let app: FastifyInstance;
@@ -43,13 +34,11 @@ beforeAll(() => {
       console.log("Connected to the database:", process.env.DATABASE_URL);
 
       // Clear usageData table
-      await mockedPrisma.usageData.deleteMany({});
+      await mockedPrisma.usageData.deleteMany({})
+      await mockedPrisma.subscriber.deleteMany({});;
     });
 
-
-
     app = buildApp();
-
   }
 
 });
@@ -73,7 +62,7 @@ describe('Test for APIs can only be accessed by authenticated and authorized ide
     expect(responseData.error).toBe("Unauthorized");
   });
 
-  test("POST /login with wrong credentials should not return a JWT token", async () => {
+  test("POST /login with wrong credentials should return 401 Unauthorized and should not return a JWT token", async () => {
 
     const response = await app.inject({
       method: "POST",
@@ -139,7 +128,7 @@ describe('Test for data plan endpoints', () => {
     });
   });
 
-  test("GET /plans should filter by provider", async () => {
+  test("GET /plans?provider=XX should filter by provider", async () => {
     const response = await app.inject({
       method: "GET",
       url: "/plans",
@@ -166,7 +155,7 @@ describe('Test for data plan endpoints', () => {
     expect(responseData.data[0]).toEqual(expectedPlan);
   });
 
-  test("GET /plans should filter by id", async () => {
+  test("GET /plans?id=XX should filter by id", async () => {
     const response = await app.inject({
       method: "GET",
       url: "/plans",
@@ -194,11 +183,11 @@ describe('Test for data plan endpoints', () => {
   });
 })
 
-describe('Test for import daily data data CSV endpoints', () => {
+describe('Test for import daily usage data CSV endpoints', () => {
 
   const filePath = path.join(__dirname, '../../data/usage.csv');
 
-  test("POST /import should import daily data usage from CSV", async () => {
+  test("POST /import with file body should import daily data usage from CSV", async () => {
     // Read the file to simulate the upload
     const form = new FormData();
     form.append('file', fs.createReadStream(filePath));
@@ -224,7 +213,7 @@ describe('Test for import daily data data CSV endpoints', () => {
 
 
 
-  test("POST /import should return an error message because of duplicated entries due to previous exact import", async () => {
+  test("POST /import with same file body should return an error message because of duplicated entries due to previous exact import", async () => {
 
     const form = new FormData();
     form.append('file', fs.createReadStream(filePath));
@@ -268,7 +257,7 @@ describe("Test for usage data endpoints", () => {
 
   });
 
-  test("GET /usage should filter by subscriber ID", async () => {
+  test("GET /usage?subscriberId=XX should filter by subscriber ID", async () => {
 
     const response = await app.inject({
       method: "GET",
@@ -292,25 +281,7 @@ describe("Test for usage data endpoints", () => {
     });
   });
 
-  test("GET /usage should filter by subscriber ID", async () => {
-
-    const response = await app.inject({
-      method: "GET",
-      url: "/usage",
-      query: { subscriberId: "1" },
-      headers: {
-        Authorization: authorizationHeader
-      }
-    })
-
-    expect(response.statusCode).toBe(200);
-    const responseData = response.json();
-    expect(responseData.success).toBe(true);
-    expect(responseData.data.length).toBe(60);
-    expect(responseData.data[0].subscriberId).toBe("1");
-  });
-
-  test("GET /usage should filter by subscriber phone number and include phone number & plan id ", async () => {
+  test("GET /usage?phoneNumber=XX should filter by subscriber phone number and include phone number & plan id ", async () => {
 
     const response = await app.inject({
       method: "GET",
@@ -332,7 +303,7 @@ describe("Test for usage data endpoints", () => {
 })
 
 describe("Test for generating billing report for a specific subsriber over the last 30 days", () => {
-  test("GET /billing should return the total cost of all full billing cycles incurred within that billing period, given the registered phone number", async () => {
+  test("GET /billing?phoneNumber=XX&days=30 should return the total cost of all full billing cycles incurred within the last 30 days period, given the registered phone number", async () => {
 
     const response = await app.inject({
       method: "GET",
@@ -360,7 +331,7 @@ describe("Test for generating billing report for a specific subsriber over the l
     });
   });
 
-  test("GET /billing should return error message given non-registered phone number ", async () => {
+  test("GET /billing?phoneNumber=XX should return error message given non-registered phone number ", async () => {
 
     const response = await app.inject({
       method: "GET",
@@ -402,7 +373,7 @@ describe("Test for subscribers endpoints", () => {
     });
   });
 
-  test("GET /subscribers should correctly filter by subscriber ID", async () => {
+  test("GET /subscribers?id=XX should correctly filter by subscriber ID", async () => {
 
     const response = await app.inject({
       method: "GET",
@@ -421,7 +392,7 @@ describe("Test for subscribers endpoints", () => {
     expect(responseData.data[0].planId).toBe("plan_3");
   });
 
-  test("GET /subscribers should correctly filter by phone number", async () => {
+  test("GET /subscribers?phoneNumber=XX should correctly filter by phone number", async () => {
 
     const response = await app.inject({
       method: "GET",

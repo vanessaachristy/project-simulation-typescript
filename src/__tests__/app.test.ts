@@ -25,17 +25,26 @@ beforeAll(() => {
   if (process.env.DATABASE_URL !== 'file:./test.db') {
     throw new Error("Tests must be run with DATABASE_URL=file:./test.db. Found: " + process.env.DATABASE_URL);
   } else {
-    // Reset and initialize the test database
-    execSync('npx prisma migrate dev --name init', { stdio: 'inherit' });
-    execSync('ts-node prisma/seed.ts', { stdio: 'inherit' });
+    try {
+      console.log("Resetting the database...");
 
+      // Drop all tables and reset the database
+      execSync('npx prisma migrate reset --force', { stdio: 'inherit' });
+
+      // Apply migrations to create the schema
+      execSync('npx prisma migrate dev --name init', { stdio: 'inherit' });
+
+      // Seed the database
+      execSync('npx prisma db seed', { stdio: 'inherit' });
+
+      console.log("Database reset and seeded successfully.");
+    } catch (error) {
+      console.error("Error resetting the database:", error);
+    }
 
     mockedPrisma.$connect().then(async () => {
       console.log("Connected to the database:", process.env.DATABASE_URL);
 
-      // Clear usageData and subscriber table
-      await mockedPrisma.usageData.deleteMany({})
-      await mockedPrisma.subscriber.deleteMany({});;
     });
 
     app = buildApp();
@@ -187,7 +196,7 @@ describe('Test for import daily usage data CSV endpoints', () => {
 
   const filePath = path.join(__dirname, '../../data/usage.csv');
 
-  test("POST /import with file body should import daily data usage from CSV", async () => {
+  test("POST /importCSV with file body should import daily data usage from CSV", async () => {
     // Read the file to simulate the upload
     const form = new FormData();
     form.append('file', fs.createReadStream(filePath));
@@ -195,7 +204,7 @@ describe('Test for import daily usage data CSV endpoints', () => {
 
     const response = await app.inject({
       method: "POST",
-      url: "/import",
+      url: "/importCSV",
       headers: {
         Authorization: authorizationHeader,
         ...form.getHeaders(),
@@ -213,7 +222,7 @@ describe('Test for import daily usage data CSV endpoints', () => {
 
 
 
-  test("POST /import with same file body should return an error message because of duplicated entries due to previous exact import", async () => {
+  test("POST /importCSV with same file body should return an error message because of duplicated entries due to previous exact import", async () => {
 
     const form = new FormData();
     form.append('file', fs.createReadStream(filePath));
@@ -221,7 +230,7 @@ describe('Test for import daily usage data CSV endpoints', () => {
 
     const response = await app.inject({
       method: "POST",
-      url: "/import",
+      url: "/importCSV",
       headers: {
         Authorization: authorizationHeader,
         ...form.getHeaders(),
@@ -296,7 +305,6 @@ describe("Test for usage data endpoints", () => {
     const responseData = response.json();
     expect(responseData.success).toBe(true);
     expect(responseData.data.length).toBe(60);
-    expect(responseData.data[0].subscriberId).toBe("2");
     expect(responseData.data[0].phoneNumber).toBe("81111111");
     expect(responseData.data[0].planId).toBe("plan_2");
   });

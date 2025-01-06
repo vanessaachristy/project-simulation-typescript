@@ -35,7 +35,7 @@ JWT_SECRET=<YOUR_JWT_SECRET>
 ### Migrate the database
 #### Migrate the Database: Run the following commands to set up the database schema and generate the Prisma client:
 ```shell
-yarn prisma-migrate
+yarn prisma-migrate-reset
 yarn prisma-generate
 ```
 

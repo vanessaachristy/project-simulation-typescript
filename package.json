@@ -17,6 +17,7 @@
     "build": "env-cmd -f .env tsc",
     "start": "node dist/server.js",
     "generate-test-data": "node scripts/generateSampleData.js",
+    "prisma-migrate-reset": "npx prisma migrate reset --force",
     "prisma-migrate": "npx prisma migrate dev --name init",
     "prisma-generate": "npx prisma generate",
     "test": "env-cmd -f .env.test jest"

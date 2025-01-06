@@ -7,9 +7,6 @@ dist
 # Environment variable files
 .env*
 
-# Authentication configuration file
-src/config/auth.ts
-
 # Prisma database files
 prisma/*.db
 

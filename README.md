@@ -22,11 +22,14 @@ yarn install
 #### Create a .env file in the root directory and add the following:
 ```shell
 DATABASE_URL="file:./dev.db"
+JWT_SECRET=<YOUR_JWT_SECRET>
 ```
 
 #### Create a .env.test file in the root directory and add the following:
 ```shell
 DATABASE_URL="file:./test.db"
+NODE_ENV="test"
+JWT_SECRET=<YOUR_JWT_SECRET>
 ```
 
 ### Migrate the database
@@ -38,7 +41,7 @@ yarn prisma-generate
 
 ### Check Prisma SQLite dashboard to inspect the DB
 ```shell
-npx prisma-studio
+npx prisma studio
 ```
 
 ### Build & Run 

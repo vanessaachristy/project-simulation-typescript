@@ -33,7 +33,7 @@ beforeAll(() => {
     mockedPrisma.$connect().then(async () => {
       console.log("Connected to the database:", process.env.DATABASE_URL);
 
-      // Clear usageData table
+      // Clear usageData and subscriber table
       await mockedPrisma.usageData.deleteMany({})
       await mockedPrisma.subscriber.deleteMany({});;
     });

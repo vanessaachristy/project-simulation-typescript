@@ -20,8 +20,30 @@ export const usageController = {
             // Get usages by different query from usage service
             if (subscriberId) {
                 usages = await usageService.getAllUsagesBySubscriber(subscriberId);
+
+                if (usages.length === 0) {
+                    const res: ApiResponse<any> = {
+                        success: false,
+                        data: {
+                            subscriberId: subscriberId,
+                        },
+                        error: "No usage data found for the provided subscriber ID."
+                    };
+                    return _reply.status(404).send(res);
+                }
             } else if (phoneNumber) {
                 usages = await usageService.getAllUsageByPhoneNumber(phoneNumber);
+
+                if (usages.length === 0) {
+                    const res: ApiResponse<any> = {
+                        success: false,
+                        data: {
+                            phoneNumber: phoneNumber,
+                        },
+                        error: "No usage data found for the provided phone number."
+                    };
+                    return _reply.status(404).send(res);
+                }
             } else {
                 usages = await usageService.getAllUsages();
             }

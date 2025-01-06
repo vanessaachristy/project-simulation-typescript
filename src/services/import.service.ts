@@ -4,10 +4,11 @@ import csvParser from "csv-parser";
 import { ErrorEntry, ImportResult, UsageCSVRow } from "../types";
 import { usageService } from "./usage.service";
 import { subscriberService } from "./subscriber.service";
+import { getLocaleISOString } from "../helpers/datetime";
 
 export const importService = {
     processFile: async (file: NodeJS.ReadableStream, filename: string): Promise<string> => {
-        const formattedDate = new Date().toISOString().replace(/:/g, '-').replace('T', '_').split('.')[0];
+        const formattedDate = getLocaleISOString().replace(/:/g, '-').replace('T', '_').split('.')[0];
         const filePath = path.join(__dirname, '../../data/', `${formattedDate}-${filename}`);
 
         await new Promise((resolve, reject) => {
@@ -57,7 +58,7 @@ export const importService = {
         for (const row of csvData) {
             const { phone_number, plan_id, date, usage_in_mb } = row;
             const usageDate = new Date(Number(date));
-            const stringDate = usageDate?.toISOString();
+            const stringDate = usageDate?.toLocaleDateString();
 
             if (isNaN(usageDate.getTime()) || isNaN(usage_in_mb) || usage_in_mb <= 0) {
                 errors.push({ phoneNumber: phone_number, planId: plan_id, date: stringDate, usageInMb: usage_in_mb, reason: 'Invalid usage data' });

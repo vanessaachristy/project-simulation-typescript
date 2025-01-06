@@ -1,6 +1,6 @@
 import fastifyMultipart from '@fastify/multipart'
 import { FastifyInstance } from 'fastify';
-import importCSVRoutes from './importCSV';
+import importCSVRoutes from './import';
 import plansRoutes from './plan';
 import usageRoutes from './usage';
 import auth from '../plugins/authentication';

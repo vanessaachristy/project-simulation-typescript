@@ -33,6 +33,13 @@ export const billingController = {
 
         }
 
+        if (days < 0) {
+            const res: ApiResponse<any> = {
+                success: false,
+                error: "Invalid days parameter. Days parameter should be positive."
+            };
+            return _reply.status(500).send(res);
+        }
 
 
         const billingNumOfDays = days || 30; // Default to 30 days if not provided
@@ -50,7 +57,7 @@ export const billingController = {
             return _reply.status(404).send(res);
         }
 
-        const { fullBillingCycles, billingScopeStart, billingScopeEnd, totalCost, billing } = await billingService.calculateTotalCost(billingNumOfDays, planInfo, usages);
+        const { fullBillingCycles, billingScopeStart, billingScopeEnd, totalCost, billing } = billingService.calculateTotalCost(billingNumOfDays, planInfo, usages);
 
         const res: ApiResponse<BillingReport> = {
             success: true,

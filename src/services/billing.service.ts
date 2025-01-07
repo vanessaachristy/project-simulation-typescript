@@ -4,7 +4,7 @@ import { CycleDetails } from "../types/billing";
 
 export const billingService = {
 
-    calculateTotalCost: async (billingNumOfDays: number, planInfo: DataPlan, usages: Usage[]) => {
+    calculateTotalCost: (billingNumOfDays: number, planInfo: DataPlan, usages: Usage[]) => {
 
         const cycleInDays = planInfo.billingCycleInDays;
 

@@ -14,6 +14,16 @@ export const usageController = {
 
             let usages: Usage[] | UsageDetails[];
 
+
+            // Validate startDate and endDate format
+            if (startDate && isNaN(Date.parse(startDate)) || endDate && isNaN(Date.parse(endDate))) {
+                const res: ApiResponse<any> = {
+                    success: false,
+                    error: "Start and  date format should be YYYY-MM-DD"
+                };
+                return _reply.status(400).send(res);
+            }
+
             const start = startDate ? new Date(startDate) : null;
             const end = endDate ? new Date(endDate) : null;
 
@@ -50,6 +60,13 @@ export const usageController = {
 
             // Apply date range filter if provided
             if (start && end) {
+                if (start > end) {
+                    const res: ApiResponse<any> = {
+                        success: false,
+                        error: "Invalid start and end date parameter. Start date should be before end date."
+                    };
+                    return _reply.status(404).send(res);
+                }
                 usages = usages.filter(usage => {
                     return usage.date >= start && usage.date <= end;
                 });

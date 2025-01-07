@@ -196,7 +196,7 @@ describe('Test for import daily usage data CSV endpoints', () => {
 
   const filePath = path.join(__dirname, '../../data/usage.csv');
 
-  test("POST /importCSV with file body should import daily data usage from CSV", async () => {
+  test("POST /import with file body should import daily data usage from CSV", async () => {
     // Read the file to simulate the upload
     const form = new FormData();
     form.append('file', fs.createReadStream(filePath));
@@ -204,7 +204,7 @@ describe('Test for import daily usage data CSV endpoints', () => {
 
     const response = await app.inject({
       method: "POST",
-      url: "/importCSV",
+      url: "/import",
       headers: {
         Authorization: authorizationHeader,
         ...form.getHeaders(),
@@ -222,7 +222,7 @@ describe('Test for import daily usage data CSV endpoints', () => {
 
 
 
-  test("POST /importCSV with same file body should return an error message because of duplicated entries due to previous exact import", async () => {
+  test("POST /import with same file body should return an error message because of duplicated entries due to previous exact import", async () => {
 
     const form = new FormData();
     form.append('file', fs.createReadStream(filePath));
@@ -230,7 +230,7 @@ describe('Test for import daily usage data CSV endpoints', () => {
 
     const response = await app.inject({
       method: "POST",
-      url: "/importCSV",
+      url: "/import",
       headers: {
         Authorization: authorizationHeader,
         ...form.getHeaders(),

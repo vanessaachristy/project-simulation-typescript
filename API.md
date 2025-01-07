@@ -8,7 +8,7 @@ This document provides an overview of the APIs available in the project, includi
 ### 1. User Login
 **Purpose:** To authenticate a user and provide a token for session management.
 
-**Endpoint:** `/api/login`
+**Endpoint:** `/login`
 
 **Method:** `POST`
 
@@ -72,7 +72,7 @@ This document provides an overview of the APIs available in the project, includi
 ### 3. Get Data Plan with Provider Name
 **Purpose:** To retrieve the data plans information of specific provider name.
 
-**Endpoint:** `/plans?provider=M1
+**Endpoint:** `/plans?provider=M1`
 
 **Method:** `GET`
 
@@ -104,7 +104,7 @@ This document provides an overview of the APIs available in the project, includi
 ### 4. Get Data Plan with Provider ID
 **Purpose:** To retrieve the data plans information of specific provider ID.
 
-**Endpoint:** `/plans?id=plan_5
+**Endpoint:** `/plans?id=plan_5`
 
 **Method:** `GET`
 
@@ -136,7 +136,7 @@ This document provides an overview of the APIs available in the project, includi
 ### 5. Import CSV into Database
 **Purpose:** To import daily data usage CSV by upload and store it into database
 
-**Endpoint:** `/importCSV
+**Endpoint:** `/import`
 
 **Method:** `GET`
 
@@ -204,7 +204,7 @@ All invalid rows (i.e. contains duplicated (subscriberId, date) entries)
 ### 6. Get All Daily Data Usage 
 **Purpose:** To retrieve all daily data usages of all subscribers in time decreasing order
 
-**Endpoint:** `/usages
+**Endpoint:** `/usage`
 
 **Method:** `GET`
 
@@ -241,7 +241,7 @@ All invalid rows (i.e. contains duplicated (subscriberId, date) entries)
 ### 7. Get All Daily Data Usage of Specific Subscriber ID
 **Purpose:** To retrieve all daily data usages of specific subscriber ID in date decreasing order
 
-**Endpoint:** `/usages?subscriberId=1
+**Endpoint:** `/usage?subscriberId=1`
 
 **Method:** `GET`
 
@@ -278,7 +278,7 @@ All invalid rows (i.e. contains duplicated (subscriberId, date) entries)
 ### 8. Get All Daily Data Usage of Specific Subscriber Phone Number
 **Purpose:** To retrieve all daily data usages of specific subscriber phone number in date decreasing order
 
-**Endpoint:** `/usages?phoneNumber=12345678
+**Endpoint:** `/usage?phoneNumber=12345678`
 
 **Method:** `GET`
 
@@ -332,7 +332,7 @@ Non-registered phone number
 ### 9. Get All Daily Data Usage of Specific Subscriber Phone Number with Date Range
 **Purpose:** To retrieve all daily data usages of specific subscriber phone number in the range of start & end date & in date decreasing order
 
-**Endpoint:** `/usages?phoneNumber=12345678&startDate=2025-01-01&endDate=2025-01-03
+**Endpoint:** `/usage?phoneNumber=12345678&startDate=2025-01-01&endDate=2025-01-03`
 
 **Method:** `GET`
 
@@ -389,8 +389,7 @@ Non-registered phone number
 - Given that the current date is always the last day of the current billing cycle
 - If the days parameter exceed the total count of daily usage records available for that user, it will take the total of daily records available for that user instead.
 
-
-**Endpoint:** `/billing?phoneNumber=89898989?days=30
+**Endpoint:** `/billing?phoneNumber=89898989&days=30`
 
 **Method:** `GET`
 
@@ -459,7 +458,7 @@ Non-registered phone number
 ### 11. Get All Subscribers 
 **Purpose:** To retrieve all subscribers information
 
-**Endpoint:** `/subscribers
+**Endpoint:** `/subscribers`
 
 **Method:** `GET`
 
@@ -493,7 +492,7 @@ Non-registered phone number
 ### 12. Get All Subscribers With ID
 **Purpose:** To retrieve all subscribers information by ID
 
-**Endpoint:** `/subscribers?id=1
+**Endpoint:** `/subscribers?id=1`
 
 **Method:** `GET`
 
@@ -521,7 +520,7 @@ Non-registered phone number
 ### 13. Get All Subscribers With Phone Number
 **Purpose:** To retrieve all subscribers information by phone number
 
-**Endpoint:** `/subscribers?phoneNumber=12345678
+**Endpoint:** `/subscribers?phoneNumber=12345678`
 
 **Method:** `GET`
 

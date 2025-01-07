@@ -8,6 +8,8 @@ export const billingService = {
 
         const cycleInDays = planInfo.billingCycleInDays;
 
+        billingNumOfDays = billingNumOfDays > usages.length ? usages.length : billingNumOfDays;
+
         // Calculate the full number of billing cycles
         let fullBillingCycles = Math.floor(billingNumOfDays / cycleInDays);
 

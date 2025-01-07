@@ -51,24 +51,21 @@ export const usageController = {
             // Apply date range filter if provided
             if (start && end) {
                 usages = usages.filter(usage => {
-                    const usageDate = new Date(usage.date);
-                    return usageDate >= start && usageDate <= end;
+                    return usage.date >= start && usage.date <= end;
                 });
             } else if (start) {
                 usages = usages.filter(usage => {
-                    const usageDate = new Date(usage.date);
-                    return usageDate >= start;
+                    return usage.date >= start;
                 });
             } else if (end) {
                 usages = usages.filter(usage => {
-                    const usageDate = new Date(usage.date);
-                    return usageDate <= end;
+                    return usage.date <= end;
                 });
             }
 
             const res: ApiResponse<Usage[] | UsageDetails[]> = {
                 success: true,
-                data: usages
+                data: usages.sort((a, b) => b.date.getTime() - a.date.getTime())
             };
 
             _reply.send(res);

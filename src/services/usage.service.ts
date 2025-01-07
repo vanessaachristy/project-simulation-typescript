@@ -10,7 +10,8 @@ export const usageService = {
         return usages.map(usage => ({
             ...usage,
             id: usage.id.toString(),
-            subscriberId: usage.subscriberId.toString()
+            subscriberId: usage.subscriberId.toString(),
+            date: new Date(usage.date)
         }));
     },
 
@@ -19,7 +20,8 @@ export const usageService = {
         return usagesBySubscriber.map(usage => ({
             ...usage,
             id: usage.id.toString(),
-            subscriberId: usage.subscriberId.toString()
+            subscriberId: usage.subscriberId.toString(),
+            date: new Date(usage.date)
         }));
     },
 
@@ -28,7 +30,7 @@ export const usageService = {
         return usagesByPhoneNumber.map(usage => ({
             id: usage.id.toString(),
             subscriberId: usage.subscriberId.toString(),
-            date: usage.date,
+            date: new Date(usage.date),
             usageInMb: usage.usageInMb,
             phoneNumber: usage.subscriber.phoneNumber,
             planId: usage.subscriber.planId,

@@ -12,20 +12,28 @@ export const billingController = {
         let usages: UsageDetails[]
         if (phoneNumber) {
             usages = await usageService.getAllUsageByPhoneNumber(phoneNumber);
-        } else {
-            usages = [];
-        }
 
-        if (usages.length === 0) {
+            if (usages.length === 0) {
+                const res: ApiResponse<any> = {
+                    success: false,
+                    data: {
+                        phoneNumber: phoneNumber,
+                    },
+                    error: "No usage data found for the provided phone number."
+                };
+                return _reply.status(404).send(res);
+            }
+        } else {
+
             const res: ApiResponse<any> = {
                 success: false,
-                data: {
-                    phoneNumber: phoneNumber,
-                },
-                error: "No usage data found for the provided phone number."
+                error: "No phone number provided in the query parameter."
             };
             return _reply.status(404).send(res);
+
         }
+
+
 
         const billingNumOfDays = days || 30; // Default to 30 days if not provided
 

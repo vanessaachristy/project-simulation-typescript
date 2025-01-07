@@ -53,7 +53,7 @@ beforeAll(() => {
 });
 
 afterAll(async () => {
-  // Clean up after tests (optional step, such as disconnecting Prisma client)
+  // Clean up after tests
   await mockedPrisma.$disconnect();
 });
 
@@ -68,7 +68,7 @@ describe('Test for APIs can only be accessed by authenticated and authorized ide
 
     expect(response.statusCode).toBe(401);
     const responseData = response.json();
-    expect(responseData.error).toBe("Unauthorized");
+    expect(responseData.error).toBe("No Authorization was found in request.headers");
   });
 
   test("POST /login with wrong credentials should return 401 Unauthorized and should not return a JWT token", async () => {

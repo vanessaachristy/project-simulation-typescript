@@ -2,6 +2,7 @@ import { fastifyPlugin } from "fastify-plugin";
 import { FastifyPluginCallback, FastifyReply, FastifyRequest } from "fastify";
 import fastifyJwt from "@fastify/jwt";
 import { auth } from "../config/auth";
+import { ApiResponse } from "../types";
 
 declare module 'fastify' {
     interface FastifyInstance {
@@ -13,15 +14,19 @@ const authPlugin: FastifyPluginCallback = (server, opts, done) => {
     server.register(fastifyJwt,
         {
             secret: auth.jwtSecret,
-            sign: { expiresIn: '7d' }, // expires in 1 week
+            sign: { expiresIn: auth.jwtExpiresIn },
         });
 
     server.decorate("authenticate", async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
         try {
             await request.jwtVerify();
 
-        } catch (err) {
-            reply.send(err)
+        } catch (err: any) {
+            const res: ApiResponse<{}> = {
+                success: false,
+                error: err?.message || "Unauthorized access with invalid token."
+            }
+            reply.status(401).send(res);
         }
     });
 

@@ -7,8 +7,11 @@ import { subscriberService } from "./subscriber.service";
 import { getFileNameWithTimestamp } from "../helpers/util";
 
 export const importService = {
-    processFile: async (file: NodeJS.ReadableStream, filename: string): Promise<string> => {
+
+    // writeFile and parseAndProcessCSVFromPath are used when we want to store the uploaded file locally/remotely for audit trail or reprocess file
+    writeFile: async (file: NodeJS.ReadableStream, filename: string): Promise<string> => {
         const filePath = getFileNameWithTimestamp(filename);
+
 
         await new Promise((resolve, reject) => {
             const stream = fs.createWriteStream(filePath);
@@ -24,16 +27,16 @@ export const importService = {
         }
     },
 
-    parseAndProcessCSV: async (filePath: string): Promise<{ results: ImportResult[], errors: ErrorEntry[] }> => {
+    // parseAndProcessCSVFromFile CSV is used when we want to directly parse and process CSV file without storing it
+    parseAndProcessCSVFromFileStream: async (file: NodeJS.ReadableStream): Promise<{ results: ImportResult[], errors: ErrorEntry[] }> => {
         const results: ImportResult[] = [];
         const errors: ErrorEntry[] = [];
         const csvData: UsageCSVRow[] = [];
 
         //  Push CSV data into array 
         await new Promise<void>((resolve, reject) => {
-            const readStream = fs.createReadStream(filePath);
             let headersValidated = false;
-            readStream.pipe(csvParser())
+            file.pipe(csvParser())
                 .on('data', (row: UsageCSVRow) => {
 
                     // Validate column header of the CSV file
@@ -43,7 +46,7 @@ export const importService = {
                         const missingHeaders = requiredHeaders.filter(header => !headers.includes(header));
 
                         if (missingHeaders.length > 0) {
-                            throw new Error("Missing required columns");
+                            throw new Error(`Missing required columns: ${missingHeaders.join(', ')}`);
                         }
                         headersValidated = true;
                     }
@@ -80,4 +83,5 @@ export const importService = {
 
         return { results, errors };
     }
+
 }

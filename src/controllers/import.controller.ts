@@ -29,8 +29,13 @@ export const importController = {
 
         try {
             // Call import service to handle file streams and do the insertion 
-            const filePath = await importService.processFile(file, filename);
-            const { results, errors } = await importService.parseAndProcessCSV(filePath);
+
+            // Option 1: Include storing the file locally/remotely as audit trail
+            // const filePath = await importService.writeFile(file, filename);
+
+            // Option 2: Not include storing the file  
+            const { results, errors } = await importService.parseAndProcessCSVFromFileStream(file);
+
             const res: ApiResponse<ImportResponse> = {
                 success: true,
                 data: { imported: results.length, errorsLength: errors.length, errors }

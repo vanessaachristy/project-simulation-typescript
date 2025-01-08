@@ -4,7 +4,7 @@ import { Subscriber } from '@prisma/client';
 import { subscriberService } from '../services/subscriber.service';
 
 export const subscriberController = {
-    getSubscriber: async (request: FastifyRequest, _reply: FastifyReply) => {
+    getSubscriber: async (request: FastifyRequest, reply: FastifyReply) => {
         try {
             const { id, phoneNumber } = request.query as { id?: string, phoneNumber?: string };
             let subscribers: Subscriber[] = [];
@@ -24,14 +24,14 @@ export const subscriberController = {
                 data: subscribers
             };
 
-            _reply.send(res);
+            reply.send(res);
         } catch (error) {
             const res: ApiResponse<{}> = {
                 success: false,
                 error: (error as any)?.message || "Internal server error"
             };
 
-            _reply.status((error as any)?.statusCode || 500).send(res);
+            reply.status((error as any)?.statusCode || 500).send(res);
         }
     }
 

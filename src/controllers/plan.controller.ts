@@ -3,7 +3,7 @@ import { ApiResponse, DataPlan } from '../types';
 import { planService } from '../services/plan.service';
 
 export const planController = {
-    getPlans: async (request: FastifyRequest, _reply: FastifyReply) => {
+    getPlans: async (request: FastifyRequest, reply: FastifyReply) => {
         try {
             const { provider, id } = request.query as { provider?: string, id?: string };
             let plans: DataPlan[] = [];
@@ -22,14 +22,14 @@ export const planController = {
                 data: plans
             };
 
-            _reply.send(res);
+            reply.send(res);
         } catch (error) {
             const res: ApiResponse<{}> = {
                 success: false,
                 error: (error as any)?.message || "Internal server error"
             };
 
-            _reply.status((error as any)?.statusCode || 500).send(res);
+            reply.status((error as any)?.statusCode || 500).send(res);
         }
     }
 

@@ -5,7 +5,7 @@ import routes from "./routes";
 export const buildApp = (opts = {}) => {
   const app = Fastify(opts);
 
-  app.get("/", async (_request, _reply) => {
+  app.get("/", async (_request, reply) => {
     return { success: true } as ApiResponse<null>;
   });
 

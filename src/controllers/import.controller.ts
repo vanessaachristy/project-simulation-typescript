@@ -4,7 +4,7 @@ import { importService } from '../services/import.service';
 
 
 export const importController = {
-    importCSV: async (request: FastifyRequest, _reply: FastifyReply) => {
+    importCSV: async (request: FastifyRequest, reply: FastifyReply) => {
 
         // Check if the request is multipart / file uploaded
         if (!request.isMultipart()) {
@@ -12,7 +12,7 @@ export const importController = {
                 success: false,
                 error: "No file uploaded"
             };
-            return _reply.status(400).send(res);
+            return reply.status(400).send(res);
         }
 
         const data = await request.file();
@@ -22,7 +22,7 @@ export const importController = {
                 success: false,
                 error: "No file uploaded"
             };
-            return _reply.send(res)
+            return reply.send(res)
         };
 
         const { file, filename } = data;
@@ -40,7 +40,7 @@ export const importController = {
                 success: true,
                 data: { imported: results.length, errorsLength: errors.length, errors }
             };
-            _reply.send(res);
+            reply.send(res);
 
         } catch (error: any) {
 
@@ -49,7 +49,7 @@ export const importController = {
                 error: (error as any)?.message || "Internal server error"
             };
 
-            _reply.status((error as any)?.statusCode || 500).send(res);
+            reply.status((error as any)?.statusCode || 500).send(res);
         }
 
     }

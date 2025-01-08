@@ -1,5 +1,5 @@
 import fastifyMultipart from '@fastify/multipart'
-import { FastifyInstance } from 'fastify';
+import { FastifyError, FastifyInstance } from 'fastify';
 import importCSVRoutes from './import';
 import plansRoutes from './plan';
 import usageRoutes from './usage';
@@ -7,6 +7,7 @@ import auth from '../plugins/authentication';
 import userRoutes from './user';
 import billingRoutes from './billing';
 import subscriberRoutes from './subscriber';
+import { ApiResponse } from '../types';
 
 
 export default function routes(fastify: FastifyInstance) {
@@ -23,5 +24,16 @@ export default function routes(fastify: FastifyInstance) {
   fastify.register(userRoutes)
   fastify.register(billingRoutes);
   fastify.register(subscriberRoutes);
+
+  fastify.setErrorHandler(function (error: FastifyError, request, reply) {
+    if (error.validation) {
+      const res: ApiResponse<{}> = {
+        success: false,
+        error: error?.message
+      }
+      reply.status(error?.statusCode || 400).send(res)
+    }
+  })
+
 
 }

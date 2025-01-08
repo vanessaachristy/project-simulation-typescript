@@ -3,7 +3,7 @@ import { ApiResponse, Usage, UsageDetails } from '../types';
 import { usageService } from '../services/usage.service';
 
 export const usageController = {
-    getUsages: async (request: FastifyRequest, _reply: FastifyReply) => {
+    getUsages: async (request: FastifyRequest, reply: FastifyReply) => {
         try {
             const { subscriberId, phoneNumber, startDate, endDate } = request.query as {
                 subscriberId?: string,
@@ -15,14 +15,14 @@ export const usageController = {
             let usages: Usage[] | UsageDetails[];
 
 
-            // Validate startDate and endDate format
-            if (startDate && isNaN(Date.parse(startDate)) || endDate && isNaN(Date.parse(endDate))) {
-                const res: ApiResponse<any> = {
-                    success: false,
-                    error: "Start and  date format should be YYYY-MM-DD"
-                };
-                return _reply.status(400).send(res);
-            }
+            // // Validate startDate and endDate format
+            // if (startDate && isNaN(Date.parse(startDate)) || endDate && isNaN(Date.parse(endDate))) {
+            //     const res: ApiResponse<any> = {
+            //         success: false,
+            //         error: "Start and  date format should be YYYY-MM-DD"
+            //     };
+            //     return reply.status(400).send(res);
+            // }
 
             const start = startDate ? new Date(startDate) : null;
             const end = endDate ? new Date(endDate) : null;
@@ -39,7 +39,7 @@ export const usageController = {
                         },
                         error: "No usage data found for the provided subscriber ID."
                     };
-                    return _reply.status(404).send(res);
+                    return reply.status(404).send(res);
                 }
             } else if (phoneNumber) {
                 usages = await usageService.getAllUsageByPhoneNumber(phoneNumber);
@@ -52,7 +52,7 @@ export const usageController = {
                         },
                         error: "No usage data found for the provided phone number."
                     };
-                    return _reply.status(404).send(res);
+                    return reply.status(404).send(res);
                 }
             } else {
                 usages = await usageService.getAllUsages();
@@ -65,7 +65,7 @@ export const usageController = {
                         success: false,
                         error: "Invalid start and end date parameter. Start date should be before end date."
                     };
-                    return _reply.status(404).send(res);
+                    return reply.status(404).send(res);
                 }
                 usages = usages.filter(usage => {
                     return usage.date >= start && usage.date <= end;
@@ -85,7 +85,7 @@ export const usageController = {
                 data: usages.sort((a, b) => b.date.getTime() - a.date.getTime())
             };
 
-            _reply.send(res);
+            reply.send(res);
 
         } catch (error) {
             const res: ApiResponse<{}> = {
@@ -93,7 +93,7 @@ export const usageController = {
                 error: (error as any)?.message || "Internal server error"
             };
 
-            _reply.status((error as any)?.statusCode || 500).send(res);
+            reply.status((error as any)?.statusCode || 500).send(res);
         }
     }
 

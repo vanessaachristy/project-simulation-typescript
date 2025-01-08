@@ -59,14 +59,16 @@ export const importService = {
         // Parse and insert each CSV data into database
         for (const row of csvData) {
             const { phone_number, plan_id, date, usage_in_mb } = row;
-            const usageDate = new Date(Number(date));
-            const stringDate = usageDate.toISOString();
+            const validDate = !isNaN(date) && Number(date) > 0
 
             // Validate usage date and usage number
-            if (isNaN(usageDate.getTime()) || isNaN(usage_in_mb) || usage_in_mb <= 0) {
-                errors.push({ phoneNumber: phone_number, planId: plan_id, date: stringDate, usageInMb: usage_in_mb, reason: 'Invalid usage data' });
+            if (!validDate || isNaN(usage_in_mb) || usage_in_mb <= 0) {
+                errors.push({ phoneNumber: phone_number, planId: plan_id, date: date.toString(), usageInMb: usage_in_mb, reason: 'Invalid usage data' });
                 continue;
             }
+
+            const usageDate = new Date(Number(date));
+            const stringDate = usageDate.toISOString();
 
             try {
                 const subscriberId = await subscriberService.getOrCreateSubscriberId(phone_number, plan_id);

@@ -222,6 +222,32 @@ describe('Test for import daily usage data CSV endpoints', () => {
 
 
 
+  test("POST /import with CSV file that consist of invalid date and invalid usage number", async () => {
+
+    const filePath = path.join(__dirname, '../../data/invalidUsage.csv');
+    const form = new FormData();
+    form.append('file', fs.createReadStream(filePath));
+    form.append('key', 'value');
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/import",
+      headers: {
+        Authorization: authorizationHeader,
+        ...form.getHeaders(),
+      },
+      body: form
+    });
+
+
+    expect(response.statusCode).toBe(200);
+    const responseData = response.json();
+    expect(responseData.success).toBe(true);
+    expect(responseData.data.errors[0].reason).toBe("Invalid usage data");
+    expect(responseData.data.errors[1].reason).toBe("Invalid usage data");
+
+  });
+
   test("POST /import with same file body should return an error message because of duplicated entries due to previous exact import", async () => {
 
     const form = new FormData();

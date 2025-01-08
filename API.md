@@ -162,8 +162,8 @@ phone_number,plan_id,date,usage_in_mb
 **Example CSV content**:
 ```csv
 phone_number,plan_id,date,usage_in_mb
-12345678,plan_5,1735948800000,1024
-11112222,plan_3,1735948800000,2048
+80000000,plan_5,1735948800000,1024
+81111111,plan_3,1735948800000,2048
 ```
 
 **Response:**
@@ -173,7 +173,7 @@ All valid rows
 {
     "success": true,
     "data": {
-        "imported": 600,
+        "imported": 2,
         "errorsLength": 0,
         "errors": []
     }
@@ -186,14 +186,14 @@ All invalid rows (i.e. contains duplicated (subscriberId, date) entries)
     "success": true,
     "data": {
         "imported": 0,
-        "errorsLength": 600,
+        "errorsLength": 2,
         "errors": [
             {
-                "phoneNumber": "12345678",
+                "phoneNumber": "80000000",
                 "planId": "plan_1",
                 "date": "2025-01-04T00:00:00.000Z",
                 "usageInMb": "100",
-                "reason": "There is a unique constraint violation. Existing subscriberId and date already exist."
+                "reason": "Unique constraint violation. Same date for the same subscriber date aleady exists."
             },
             // ...
         ]
@@ -202,7 +202,7 @@ All invalid rows (i.e. contains duplicated (subscriberId, date) entries)
 ```
 
 ### 6. Get All Daily Data Usage 
-**Purpose:** To retrieve all daily data usages of all subscribers in time decreasing order
+**Purpose:** To retrieve all daily data usages of all subscribers in date decreasing order
 
 **Endpoint:** `/usage`
 
@@ -278,7 +278,7 @@ All invalid rows (i.e. contains duplicated (subscriberId, date) entries)
 ### 8. Get All Daily Data Usage of Specific Subscriber Phone Number
 **Purpose:** To retrieve all daily data usages of specific subscriber phone number in date decreasing order
 
-**Endpoint:** `/usage?phoneNumber=12345678`
+**Endpoint:** `/usage?phoneNumber=80000000`
 
 **Method:** `GET`
 
@@ -301,7 +301,7 @@ Registered phone number
             "subscriberId": "2",
             "date": "2024-11-06T00:00:00.000Z",
             "usageInMb": 1317,
-            "phoneNumber": "12345678",
+            "phoneNumber": "80000000",
             "planId": "plan_2"
         },
         {
@@ -309,7 +309,7 @@ Registered phone number
             "subscriberId": "2",
             "date": "2024-11-07T00:00:00.000Z",
             "usageInMb": 1546,
-            "phoneNumber": "12345678",
+            "phoneNumber": "80000000",
             "planId": "plan_2"
         },
 
@@ -323,7 +323,7 @@ Non-registered phone number
 {
     "success": false,
     "data": {
-        "phoneNumber": "11112222"
+        "phoneNumber": "81234567"
     },
     "error": "No usage data found for the provided phone number."
 }
@@ -332,7 +332,7 @@ Non-registered phone number
 ### 9. Get All Daily Data Usage of Specific Subscriber Phone Number with Date Range
 **Purpose:** To retrieve all daily data usages of specific subscriber phone number in the range of start & end date & in date decreasing order
 
-**Endpoint:** `/usage?phoneNumber=12345678&startDate=2025-01-01&endDate=2025-01-03`
+**Endpoint:** `/usage?phoneNumber=80000000&startDate=2025-01-01&endDate=2025-01-03`
 
 **Method:** `GET`
 
@@ -355,7 +355,7 @@ Registered phone number
             "subscriberId": "2",
             "date": "2025-01-02T00:00:00.000Z",
             "usageInMb": 919,
-            "phoneNumber": "12345678",
+            "phoneNumber": "80000000",
             "planId": "plan_2"
         },
         {
@@ -363,7 +363,7 @@ Registered phone number
             "subscriberId": "2",
             "date": "2025-01-01T00:00:00.000Z",
             "usageInMb": 891,
-            "phoneNumber": "12345678",
+            "phoneNumber": "80000000",
             "planId": "plan_2"
         }
     ]
@@ -375,7 +375,7 @@ Non-registered phone number
 {
     "success": false,
     "data": {
-        "phoneNumber": "11112222"
+        "phoneNumber": "81112222"
     },
     "error": "No usage data found for the provided phone number."
 }
@@ -449,7 +449,7 @@ Non-registered phone number
 {
     "success": false,
     "data": {
-        "phoneNumber": "11112222"
+        "phoneNumber": "81112222"
     },
     "error": "No usage data found for the provided phone number."
 }
@@ -476,12 +476,12 @@ Non-registered phone number
     "data": [
         {
             "id": 1,
-            "phoneNumber": "12345678",
+            "phoneNumber": "80000000",
             "planId": "plan_3"
         },
         {
             "id": 2,
-            "phoneNumber": "81234567",
+            "phoneNumber": "81111111",
             "planId": "plan_2"
         },
         // ...
@@ -510,7 +510,7 @@ Non-registered phone number
     "data": [
         {
             "id": 1,
-            "phoneNumber": "12345678",
+            "phoneNumber": "80000000",
             "planId": "plan_3"
         }
     ]
@@ -520,7 +520,7 @@ Non-registered phone number
 ### 13. Get All Subscribers With Phone Number
 **Purpose:** To retrieve all subscribers information by phone number
 
-**Endpoint:** `/subscribers?phoneNumber=12345678`
+**Endpoint:** `/subscribers?phoneNumber=80000000`
 
 **Method:** `GET`
 
@@ -538,7 +538,7 @@ Non-registered phone number
     "data": [
         {
             "id": 1,
-            "phoneNumber": "12345678",
+            "phoneNumber": "80000000",
             "planId": "plan_3"
         }
     ]

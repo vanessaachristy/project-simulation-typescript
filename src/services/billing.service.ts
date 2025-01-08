@@ -17,7 +17,7 @@ export const billingService = {
         const billingScopeEnd = new Date();
         billingScopeEnd.setHours(23, 59, 59, 999); // Last moment of the current day
 
-        // Calculate the start of the billing period for exactly full billing cycles (30 full days)
+        // Calculate the start of the billing period for exactly full billing cycles 
         const billingScopeStart = new Date(billingScopeEnd.getTime() - (fullBillingCycles * cycleInDays) * 24 * 60 * 60 * 1000);
         billingScopeStart.setHours(0, 0, 0, 0); // Set the start to midnight of the first day of the cycle
 
